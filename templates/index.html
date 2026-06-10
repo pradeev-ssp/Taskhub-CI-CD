@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskHub - Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-custom fs-4" href="{{ url_for('index') }}">
+                <i class="bi bi-layers-half me-2"></i>TaskHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom active" aria-current="page" href="{{ url_for('index') }}">
+                            <i class="bi bi-grid-1x2-fill me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{{ url_for('create') }}">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Create Task
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container mt-4 animate-fade-in">
+        
+        <!-- Welcome Header & Add Button -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">Task Dashboard</h1>
+                <p class="text-secondary mb-0">Overview of your current activities and task statuses.</p>
+            </div>
+            <a href="{{ url_for('create') }}" class="btn btn-primary-custom">
+                <i class="bi bi-plus-lg me-1"></i> Add Task
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show alert-custom border-{{ category if category != 'error' else 'danger' }} mb-4" role="alert">
+                        <div class="d-flex align-items-center">
+                            {% if category == 'success' %}
+                                <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                            {% elif category == 'danger' %}
+                                <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+                            {% else %}
+                                <i class="bi bi-info-circle-fill me-2 text-info"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Task Statistics Cards -->
+        <div class="row g-4 mb-4">
+            <!-- Total Tasks Card -->
+            <div class="col-12 col-md-4">
+                <div class="card card-custom h-100">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-secondary text-uppercase fw-semibold small">Total Tasks</span>
+                            <h2 class="display-6 fw-bold mt-1 mb-0">{{ stats.total }}</h2>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3">
+                            <i class="bi bi-list-task stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Completed Tasks Card -->
+            <div class="col-12 col-md-4">
+                <div class="card card-custom h-100">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-secondary text-uppercase fw-semibold small">Completed</span>
+                            <h2 class="display-6 fw-bold mt-1 mb-0 text-success">{{ stats.completed }}</h2>
+                        </div>
+                        <div class="bg-success bg-opacity-10 text-success p-3 rounded-3">
+                            <i class="bi bi-check-circle stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Pending Tasks Card -->
+            <div class="col-12 col-md-4">
+                <div class="card card-custom h-100">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-secondary text-uppercase fw-semibold small">Pending</span>
+                            <h2 class="display-6 fw-bold mt-1 mb-0 text-warning">{{ stats.pending }}</h2>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-3">
+                            <i class="bi bi-clock-history stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Table Section -->
+        <div class="table-custom-wrapper">
+            {% if tasks %}
+                <table class="table table-custom table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 80px;">ID</th>
+                            <th scope="col" style="width: 250px;">Title</th>
+                            <th scope="col">Description</th>
+                            <th scope="col" style="width: 150px;">Status</th>
+                            <th scope="col" style="width: 180px;">Created Date</th>
+                            <th scope="col" style="width: 280px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                            <tr>
+                                <td><span class="text-secondary fw-semibold">#{{ task.id }}</span></td>
+                                <td><span class="fw-bold">{{ task.title }}</span></td>
+                                <td class="text-secondary text-truncate" style="max-width: 300px;" title="{{ task.description }}">
+                                    {{ task.description if task.description else '-' }}
+                                </td>
+                                <td>
+                                    {% if task.status == 'Completed' %}
+                                        <span class="badge badge-completed">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Completed
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-pending">
+                                            <i class="bi bi-hourglass-split me-1"></i>Pending
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-secondary small">{{ task.created_at }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <!-- Update Status Form -->
+                                        <form action="{{ url_for('update_status', task_id=task.id) }}" method="POST" class="d-inline">
+                                            {% if task.status == 'Pending' %}
+                                                <button type="submit" class="btn btn-outline-success btn-action-custom text-nowrap">
+                                                    <i class="bi bi-check2-circle me-1"></i> Complete
+                                                </button>
+                                            {% else %}
+                                                <button type="submit" class="btn btn-outline-warning btn-action-custom text-nowrap">
+                                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reopen
+                                                </button>
+                                            {% endif %}
+                                        </form>
+                                        <!-- Delete Form -->
+                                        <form action="{{ url_for('delete', task_id=task.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-action-custom">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-journal-x text-secondary" style="font-size: 4rem; opacity: 0.5;"></i>
+                    </div>
+                    <h4 class="fw-bold">No tasks found</h4>
+                    <p class="text-secondary mx-auto" style="max-width: 400px;">Get started by adding a task to organize and track your workload.</p>
+                    <a href="{{ url_for('create') }}" class="btn btn-primary-custom mt-2">
+                        <i class="bi bi-plus-lg me-1"></i> Add First Task
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

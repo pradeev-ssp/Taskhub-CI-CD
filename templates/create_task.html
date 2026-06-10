@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskHub - Create Task</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-custom fs-4" href="{{ url_for('index') }}">
+                <i class="bi bi-layers-half me-2"></i>TaskHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{{ url_for('index') }}">
+                            <i class="bi bi-grid-1x2-fill me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom active" aria-current="page" href="{{ url_for('create') }}">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Create Task
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container mt-5 animate-fade-in">
+        
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                
+                <!-- Back Link -->
+                <div class="mb-3">
+                    <a href="{{ url_for('index') }}" class="text-decoration-none text-secondary hover-text-white d-inline-flex align-items-center">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                </div>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show alert-custom border-{{ category if category != 'error' else 'danger' }} mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+                                    <div>{{ message }}</div>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white" data-bs-alert="close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Form Card -->
+                <div class="card card-custom p-4">
+                    <div class="card-body p-2">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
+                                <i class="bi bi-journal-plus fs-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title h4 fw-bold mb-0">Create New Task</h3>
+                                <p class="text-secondary small mb-0">Add a new item to your management list.</p>
+                            </div>
+                        </div>
+
+                        <!-- Create Task Form -->
+                        <form action="{{ url_for('create') }}" method="POST">
+                            
+                            <!-- Title Input -->
+                            <div class="mb-4">
+                                <label for="title" class="form-label fw-semibold text-secondary small text-uppercase">Task Title <span class="text-danger">*</span></label>
+                                <input type="text" 
+                                       class="form-control form-control-custom" 
+                                       id="title" 
+                                       name="title" 
+                                       placeholder="Enter task title" 
+                                       value="{{ title if title else '' }}" 
+                                       required 
+                                       autofocus>
+                                <div class="form-text text-secondary text-opacity-50 small mt-1">Keep it concise and clear.</div>
+                            </div>
+
+                            <!-- Description Input -->
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-semibold text-secondary small text-uppercase">Description</label>
+                                <textarea class="form-control form-control-custom" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="5" 
+                                          placeholder="Enter task details (optional)">{{ description if description else '' }}</textarea>
+                                <div class="form-text text-secondary text-opacity-50 small mt-1">Provide any additional context or details for the task.</div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-flex gap-2 justify-content-end pt-2 border-top border-secondary border-opacity-25 mt-4">
+                                <a href="{{ url_for('index') }}" class="btn btn-outline-custom">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary-custom">
+                                    <i class="bi bi-check-lg me-1"></i> Save Task
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
