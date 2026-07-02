@@ -201,5 +201,10 @@ def page_not_found(e):
 if __name__ == '__main__':
     # Initialize the database on startup
     init_db()
+
     # Run the application
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=int(os.getenv("PORT", 5000)),
+        debug=os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    )
