@@ -130,3 +130,6 @@ To containerize the application:
    ```bash
    docker run -d -p 5000:5000 --name taskhub-app taskhub:latest
    ```
+
+
+git add . ":(exclude)venv"
